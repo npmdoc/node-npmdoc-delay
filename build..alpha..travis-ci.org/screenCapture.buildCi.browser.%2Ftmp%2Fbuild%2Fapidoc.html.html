@@ -1,0 +1,225 @@
+<html><head></head><body><div class="apidocDiv">
+<style>
+/*csslint
+*/
+.apidocDiv {
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.apidocDiv a[href] {
+    color: #33f;
+    font-weight: bold;
+    text-decoration: none;
+}
+.apidocDiv a[href]:hover {
+    text-decoration: underline;
+}
+.apidocCodeCommentSpan {
+    background: #bbf;
+    color: #000;
+    display: block;
+}
+.apidocCodeKeywordSpan {
+    color: #d00;
+    font-weight: bold;
+}
+.apidocCodePre {
+    background: #eef;
+    border: 1px solid;
+    color: #777;
+    padding: 5px;
+    white-space: pre-wrap;
+}
+.apidocFooterDiv {
+    margin-top: 20px;
+    text-align: center;
+}
+.apidocModuleLi {
+    margin-top: 10px;
+}
+.apidocSectionDiv {
+    border-top: 1px solid;
+    margin-top: 20px;
+}
+.apidocSignatureSpan {
+    color: #777;
+    font-weight: bold;
+}
+</style>
+<h1>api documentation for
+    <a href="https://github.com/sindresorhus/delay#readme">delay (v2.0.0)</a>
+</h1>
+<h4>Delay a promise a specified amount of time</h4>
+<div class="apidocSectionDiv"><a href="#apidoc.tableOfContents" id="apidoc.tableOfContents"><h1>table of contents</h1></a><ol>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.delay">module delay</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.delay.delay">
+            function <span class="apidocSignatureSpan"></span>delay
+            <span class="apidocSignatureSpan">(ms, value)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.delay.CancelError">
+            function <span class="apidocSignatureSpan">delay.</span>CancelError
+            <span class="apidocSignatureSpan">(message)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.delay.reject">
+            function <span class="apidocSignatureSpan">delay.</span>reject
+            <span class="apidocSignatureSpan">(ms, value)</span>
+            </a>
+
+        </li>
+
+    </ol></li>
+
+</ol></div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.delay" id="apidoc.module.delay">module delay</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.delay.delay" id="apidoc.element.delay.delay">
+        function <span class="apidocSignatureSpan"></span>delay
+        <span class="apidocSignatureSpan">(ms, value)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">delay = function (ms, value) {
+	ms = ms || 0;
+	const useValue = (arguments.length &gt; 1);
+	let result = value;
+
+	const delaying = defer();
+	const promise = delaying.promise;
+
+	let timeout = setTimeout(() =&gt; {
+		const settle = willResolve ? delaying.resolve : delaying.reject;
+		settle(result);
+	}, ms);
+
+	const thunk = thunkResult =&gt; {
+		if (!useValue) {
+			result = thunkResult;
+		}
+		return promise;
+	};
+
+	thunk.then = promise.then.bind(promise);
+	thunk.catch = promise.catch.bind(promise);
+	thunk._actualPromise = promise;
+
+	thunk.cancel = () =&gt; {
+		if (timeout) {
+			clearTimeout(timeout);
+			timeout = null;
+			delaying.reject(new CancelError('Delay canceled'));
+		}
+	};
+
+	return thunk;
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.delay.CancelError" id="apidoc.element.delay.CancelError">
+        function <span class="apidocSignatureSpan">delay.</span>CancelError
+        <span class="apidocSignatureSpan">(message)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">class CancelError extends Error {
+	constructor(message) {
+		super(message);
+		this.name = 'CancelError';
+	}
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.delay.reject" id="apidoc.element.delay.reject">
+        function <span class="apidocSignatureSpan">delay.</span>reject
+        <span class="apidocSignatureSpan">(ms, value)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">reject = function (ms, value) {
+	ms = ms || 0;
+	const useValue = (arguments.length &gt; 1);
+	let result = value;
+
+	const delaying = defer();
+	const promise = delaying.promise;
+
+	let timeout = setTimeout(() =&gt; {
+		const settle = willResolve ? delaying.resolve : delaying.reject;
+		settle(result);
+	}, ms);
+
+	const thunk = thunkResult =&gt; {
+		if (!useValue) {
+			result = thunkResult;
+		}
+		return promise;
+	};
+
+	thunk.then = promise.then.bind(promise);
+	thunk.catch = promise.catch.bind(promise);
+	thunk._actualPromise = promise;
+
+	thunk.cancel = () =&gt; {
+		if (timeout) {
+			clearTimeout(timeout);
+			timeout = null;
+			delaying.reject(new CancelError('Delay canceled'));
+		}
+	};
+
+	return thunk;
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+	thunk.catch = promise.catch.bind(promise);
+	thunk._actualPromise = promise;
+
+	thunk.cancel = () =&gt; {
+		if (timeout) {
+			clearTimeout(timeout);
+			timeout = null;
+			delaying.<span class="apidocCodeKeywordSpan">reject</span>(new CancelError('Delay canceled'));
+		}
+	};
+
+	return thunk;
+};
+
+module.exports = generate(true);
+...</pre></li>
+    </ul>
+
+
+</div>
+
+<div class="apidocFooterDiv">
+    [ this document was created with
+    <a href="https://github.com/kaizhu256/node-utility2" target="_blank">utility2</a>
+    ]
+</div>
+</div>
+</body></html>
